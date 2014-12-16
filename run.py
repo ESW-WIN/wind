@@ -41,8 +41,8 @@ def flatten_wind_data(data, index):
 class observations(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument('start', type=str, required=True)
-		self.parser.add_argument('end', type=str, required=True)
+		self.parser.add_argument('start', type=int, required=True)
+		self.parser.add_argument('end', type=int, required=True)
 
 	def get(self):
 		args = self.parser.parse_args()
@@ -66,7 +66,7 @@ class observations(Resource):
 class observation(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument('time', type=str, required=False)
+		self.parser.add_argument('time', type=int, required=False)
 
 	def get(self):
 		args = self.parser.parse_args()
@@ -88,7 +88,7 @@ class observation(Resource):
 					cursor.execute('insert into wind (id, time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', values)
 					cursor.fetchone()
 				except:
-					print 'Something went wrong with inserting this data into the database. The row %s was unable to be added to the database.\n' % str(values)
+					print 'Warning: Something went wrong with inserting this data into the database. The row %s was unable to be added to the database.\n' % str(values)
 			values = flatten_wind_data(data, 0)
 		else:
 			values = query_value

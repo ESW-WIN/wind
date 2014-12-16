@@ -48,6 +48,8 @@ All the wind data is stored in wind.db. This is a sqlite3 database that can be u
 $ sqlite3 wind.db
 ```
 
+The server runs a RESTful Flask API.
+
 This database is also stored in the github for easy access. To make it easier for people other than experienced programmers to use the data, a script will be provided to convert the sqlite3 database into a csv file.
 
 
@@ -82,6 +84,12 @@ Parameters
 Parameters
 	start - the start time in seconds rounded to the nearest half hour.
 	end - the end time in seconds rounded to the nearest half hour.
+
+####Updating API
+The API is written entirely in python using sqlite3 for the database. To make updates to the API ensure they play nice with the Flask RESTful API.
+
+####Deploying to Heroku
+(Write stuff about deploying to Heroku here...)
 
 ###Wind Website
 The web pages are built using a template structure. The base template contains a header and should be included in all web pages. This base template can be found in base.php.

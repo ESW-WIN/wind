@@ -25,7 +25,9 @@
 		</div>
 	</nav>
 	<div class="container">
-		<!--PUT ALL YOUR HTML HERE!-->
+		<?php
+			echo $body;
+		?>
 	</div>
 </body>
 <script src="js/jquery.min.js"></script>
