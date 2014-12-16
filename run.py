@@ -53,7 +53,7 @@ class observations(Resource):
 		connection = sqlite3.connect(DATABASE_NAME)
 		cursor = connection.cursor()
 
-		cursor.execute('select * from wind where time<=? and time>=?', (end, start, ))
+		cursor.execute('select * from wind where time<=? and time>=? order by time', (end, start, ))
 
 		data = cursor.fetchall()
 		wind_data = []
