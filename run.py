@@ -41,21 +41,29 @@ def flatten_wind_data(data, index):
 class observations(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
-		self.parser.add_argument('start', type=int, required=True)
-		self.parser.add_argument('end', type=int, required=True)
+		self.parser.add_argument('start', type=int, required=False)
+		self.parser.add_argument('end', type=int, required=False)
 
 	def get(self):
 		args = self.parser.parse_args()
-
 		start = args['start']
 		end = args['end']
 
-		connection = sqlite3.connect(DATABASE_NAME)
-		cursor = connection.cursor()
+		if start and end:
+			connection = sqlite3.connect(DATABASE_NAME)
+			cursor = connection.cursor()
 
-		cursor.execute('select * from wind where time<=? and time>=? order by time', (end, start, ))
+			cursor.execute('select * from wind where time<=? and time>=? order by time', (end, start, ))
 
-		data = cursor.fetchall()
+			data = cursor.fetchall()
+		else:
+			connection = sqlite3.connect(DATABASE_NAME)
+			cursor = connection.cursor()
+
+			cursor.execute('select * from wind')
+
+			data = cursor.fetchall()
+
 		wind_data = []
 
 		for values in data:
