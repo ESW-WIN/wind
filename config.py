@@ -6,7 +6,7 @@ class Config(object):
 	DATABASE_URI = 'postgresql://localhost/wind'
 
 class ProductionConfig(Config):
-	DATABASE_URI = os.environ['DATABASE_URL']
+	DATABASE_URI = os.environ['DATABASE_URI']
 
 class DevelopmentConfig(Config):
 	DEBUG = True
