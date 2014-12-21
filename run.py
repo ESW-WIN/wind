@@ -48,7 +48,7 @@ def connect_to_database(database_uri):
 
 	return connection
 
-class observations(Resource):
+class multiple_observations(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
 		self.parser.add_argument('start', type=int, required=False)
@@ -59,7 +59,10 @@ class observations(Resource):
 		start = args['start']
 		end = args['end']
 
-		if start and end:
+		print start
+		print end
+
+		if start is not None and end is not None:
 			connection = connect_to_database(app.config['DATABASE_URI'])
 			cursor = connection.cursor()
 
@@ -81,7 +84,7 @@ class observations(Resource):
 
 		return wind_data
 
-class observation(Resource):
+class single_observation(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
 		self.parser.add_argument('time', type=int, required=False)
@@ -114,8 +117,8 @@ class observation(Resource):
 
 		return build_wind_data(values)
 
-api.add_resource(observations, '/observations/multiple/')
-api.add_resource(observation, '/observations/single/')
+api.add_resource(multiple_observations, '/observations/multiple/')
+api.add_resource(single_observation, '/observations/single/')
 
 if __name__ == '__main__':
 	app.run()
