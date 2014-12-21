@@ -3,11 +3,12 @@ from flask.ext.restful import reqparse, abort, Api, Resource
 import urllib2
 import sqlite3
 import json
+import psycopg2
 
 app = Flask(__name__)
 api = Api(app)
 
-DATABASE_NAME = 'wind.db'
+DATABASE_NAME = 'test' #'wind.db'
 
 def build_wind_data(values):
 	dictionary = {}
@@ -50,14 +51,15 @@ class observations(Resource):
 		end = args['end']
 
 		if start and end:
-			connection = sqlite3.connect(DATABASE_NAME)
+			connection = psycopg2.connect(database=DATABASE_NAME)
 			cursor = connection.cursor()
 
-			cursor.execute('select * from wind where time<=? and time>=? order by time', (end, start, ))
+			# cursor.execute('select * from wind where time<=? and time>=? order by time', (end, start, ))
+			cursor.execute('select * from wind where time <= %d and time >= %d order by time' % (end, start))
 
 			data = cursor.fetchall()
 		else:
-			connection = sqlite3.connect(DATABASE_NAME)
+			connection = psycopg2.connect(database=DATABASE_NAME)
 			cursor = connection.cursor()
 
 			cursor.execute('select * from wind')
@@ -83,17 +85,21 @@ class observation(Resource):
 		response = urllib2.urlopen('http://northwesternsailing.com/api/observations/')
 		data = json.load(response)
 		
-		connection = sqlite3.connect(DATABASE_NAME)
+		connection = psycopg2.connect(database=DATABASE_NAME)
 		cursor = connection.cursor()
 
-		query_value = cursor.execute('select * from wind where time=?', (time,)).fetchone()
+		query_value = None
+
+		if time:
+			query_value = cursor.execute('select * from wind where time=%d' % (time,)).fetchone()
 
 		if not query_value:
 			for index in range(len(data)):
 				values = flatten_wind_data(data, index)
 
 				try:
-					cursor.execute('insert into wind (id, time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', values)
+					# cursor.execute('insert into wind (id, time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', values)
+					cursor.execute('insert into wind (id, time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity) values (%d, %d, %f, %f, %f, %f, %f, %f, %f)' % values)
 					cursor.fetchone()
 				except:
 					print 'Warning: Something went wrong with inserting this data into the database. The row %s was unable to be added to the database.\n' % str(values)
