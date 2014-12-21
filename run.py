@@ -70,7 +70,7 @@ class multiple_observations(Resource):
 			connection = connect_to_database(app.config['DATABASE_URI'])
 			cursor = connection.cursor()
 
-			cursor.execute('select * from wind')
+			cursor.execute('select * from wind order by time')
 
 			data = cursor.fetchall()
 
