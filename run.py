@@ -1,14 +1,13 @@
 from flask import Flask
 from flask.ext.restful import reqparse, abort, Api, Resource
-import urllib2
-import sqlite3
-import json
-import psycopg2
+import urllib2, sqlite3, json, psycopg2, os, urlparse
 
 app = Flask(__name__)
+# app.config.from_object('yourapplication.default_settings')
+app.config.from_envvar('SETTINGS')
 api = Api(app)
 
-DATABASE_NAME = 'test' #'wind.db'
+# DATABASE_NAME = 'test' #'wind.db'
 
 def build_wind_data(values):
 	dictionary = {}
@@ -51,7 +50,7 @@ class observations(Resource):
 		end = args['end']
 
 		if start and end:
-			connection = psycopg2.connect(database=DATABASE_NAME)
+			connection = psycopg2.connect(database=app.config['DATABASE_URI'])
 			cursor = connection.cursor()
 
 			# cursor.execute('select * from wind where time<=? and time>=? order by time', (end, start, ))
@@ -59,7 +58,7 @@ class observations(Resource):
 
 			data = cursor.fetchall()
 		else:
-			connection = psycopg2.connect(database=DATABASE_NAME)
+			connection = psycopg2.connect(database=app.config['DATABASE_URI'])
 			cursor = connection.cursor()
 
 			cursor.execute('select * from wind')
@@ -85,7 +84,7 @@ class observation(Resource):
 		response = urllib2.urlopen('http://northwesternsailing.com/api/observations/')
 		data = json.load(response)
 		
-		connection = psycopg2.connect(database=DATABASE_NAME)
+		connection = psycopg2.connect(database=app.config['DATABASE_URI'])
 		cursor = connection.cursor()
 
 		query_value = None
@@ -112,8 +111,8 @@ class observation(Resource):
 
 		return build_wind_data(values)
 
-api.add_resource(observations, '/observations/')
-api.add_resource(observation, '/observation/')
+api.add_resource(observations, '/observations/multiple/')
+api.add_resource(observation, '/observations/single/')
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run()
