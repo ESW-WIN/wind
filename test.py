@@ -16,3 +16,5 @@ connection = psycopg2.connect(
 cursor = connection.cursor()
 cursor.execute('select * from wind')
 print cursor.fetchall()
+
+connection.close()

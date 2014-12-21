@@ -3,7 +3,7 @@ import os
 class Config(object):
 	DEBUG = False
 	TESTING = False
-	DATABASE_URI = 'postgresql://localhost/test'
+	DATABASE_URI = 'postgresql://localhost/wind'
 
 class ProductionConfig(Config):
 	DATABASE_URI = os.environ['DATABASE_URL']

@@ -1,13 +1,8 @@
-from flask import Flask
+from app import *
 from flask.ext.restful import reqparse, abort, Api, Resource
 import urllib2, sqlite3, json, psycopg2, os, urlparse
 
-app = Flask(__name__)
-# app.config.from_object('yourapplication.default_settings')
-app.config.from_envvar('SETTINGS')
 api = Api(app)
-
-# DATABASE_NAME = 'test' #'wind.db'
 
 def build_wind_data(values):
 	dictionary = {}
@@ -38,6 +33,21 @@ def flatten_wind_data(data, index):
 
 	return values
 
+def connect_to_database(database_uri):
+	result = urlparse.urlparse(database_uri)
+	username = result.username
+	password = result.password
+	database = result.path[1:]
+	hostname = result.hostname
+	connection = psycopg2.connect(
+	    database = database,
+	    user = username,
+	    password = password,
+	    host = hostname
+	)
+
+	return connection
+
 class observations(Resource):
 	def __init__(self):
 		self.parser = reqparse.RequestParser()
@@ -50,15 +60,14 @@ class observations(Resource):
 		end = args['end']
 
 		if start and end:
-			connection = psycopg2.connect(database=app.config['DATABASE_URI'])
+			connection = connect_to_database(app.config['DATABASE_URI'])
 			cursor = connection.cursor()
 
-			# cursor.execute('select * from wind where time<=? and time>=? order by time', (end, start, ))
 			cursor.execute('select * from wind where time <= %d and time >= %d order by time' % (end, start))
 
 			data = cursor.fetchall()
 		else:
-			connection = psycopg2.connect(database=app.config['DATABASE_URI'])
+			connection = connect_to_database(app.config['DATABASE_URI'])
 			cursor = connection.cursor()
 
 			cursor.execute('select * from wind')
@@ -84,27 +93,21 @@ class observation(Resource):
 		response = urllib2.urlopen('http://northwesternsailing.com/api/observations/')
 		data = json.load(response)
 		
-		connection = psycopg2.connect(database=app.config['DATABASE_URI'])
+		connection = connect_to_database(app.config['DATABASE_URI'])
 		cursor = connection.cursor()
 
-		query_value = None
-
-		if time:
-			query_value = cursor.execute('select * from wind where time=%d' % (time,)).fetchone()
-
-		if not query_value:
+		if not time:
 			for index in range(len(data)):
 				values = flatten_wind_data(data, index)
 
 				try:
-					# cursor.execute('insert into wind (id, time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', values)
 					cursor.execute('insert into wind (id, time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity) values (%d, %d, %f, %f, %f, %f, %f, %f, %f)' % values)
 					cursor.fetchone()
 				except:
 					print 'Warning: Something went wrong with inserting this data into the database. The row %s was unable to be added to the database.\n' % str(values)
 			values = flatten_wind_data(data, 0)
 		else:
-			values = query_value
+			values = cursor.execute('select * from wind where time=%d' % (time,)).fetchone()
 
 		connection.commit()
 		connection.close()
