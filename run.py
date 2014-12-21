@@ -59,9 +59,6 @@ class multiple_observations(Resource):
 		start = args['start']
 		end = args['end']
 
-		print start
-		print end
-
 		if start is not None and end is not None:
 			connection = connect_to_database(app.config['DATABASE_URI'])
 			cursor = connection.cursor()
