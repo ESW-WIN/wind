@@ -101,8 +101,9 @@ class single_observation(Resource):
 				try:
 					cursor.execute('insert into wind (time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity) values (%d, %f, %f, %f, %f, %f, %f, %f)' % values)
 					cursor.fetchone()
-				except:
-					print 'Warning: Something went wrong with inserting this data into the database. The row %s was unable to be added to the database.\n' % str(values)
+				except Exception, e:
+					print e
+					# print 'Warning: Something went wrong with inserting this data into the database. The row %s was unable to be added to the database.\n' % str(values)
 			values = flatten_wind_data(data, 0)
 		else:
 			cursor.execute('select * from wind where time=%d' % (time,))
