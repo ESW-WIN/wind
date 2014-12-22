@@ -107,7 +107,8 @@ class single_observation(Resource):
 					print 'Warning: Something went wrong with inserting this data into the database. The row %s was unable to be added to the database.\n' % str(values)
 			values = flatten_wind_data(data, 0)
 		else:
-			values = cursor.execute('select * from wind where time=%d' % (time,)).fetchone()
+			cursor.execute('select * from wind where time=%d' % (time,))
+			values = cursor.fetchone()
 
 		connection.commit()
 		connection.close()
