@@ -6,20 +6,18 @@ api = Api(app)
 
 def build_wind_data(values):
 	dictionary = {}
-	dictionary['id'] = values[0]
-	dictionary['time'] = values[1]
-	dictionary['wind_speed'] = values[2]
-	dictionary['wind_direction'] = values[3]
-	dictionary['gust_speed'] = values[4]
-	dictionary['gust_direction'] = values[5]
-	dictionary['temperature'] = values[6]
-	dictionary['pressure'] = values[7]
-	dictionary['relative_humidity'] = values[8]
+	dictionary['time'] = values[0]
+	dictionary['wind_speed'] = values[1]
+	dictionary['wind_direction'] = values[2]
+	dictionary['gust_speed'] = values[3]
+	dictionary['gust_direction'] = values[4]
+	dictionary['temperature'] = values[5]
+	dictionary['pressure'] = values[6]
+	dictionary['relative_humidity'] = values[7]
 
 	return dictionary
 
 def flatten_wind_data(data, index):
-	wind_id = int(data[index]['id'])
 	time_stamp = int(data[index]['ts'])
 	wind_speed = float(data[index]['wind']['speed'])
 	wind_direction = float(data[index]['wind']['dir'])
@@ -29,7 +27,7 @@ def flatten_wind_data(data, index):
 	pressure = float(data[index]['baro'])
 	relative_humidity = float(data[index]['rh'])
 
-	values = (wind_id, time_stamp, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity, )
+	values = (time_stamp, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity, )
 
 	return values
 
@@ -101,7 +99,7 @@ class single_observation(Resource):
 				values = flatten_wind_data(data, index)
 
 				try:
-					cursor.execute('insert into wind (id, time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity) values (%d, %d, %f, %f, %f, %f, %f, %f, %f)' % values)
+					cursor.execute('insert into wind (time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity) values (%d, %f, %f, %f, %f, %f, %f, %f)' % values)
 					cursor.fetchone()
 				except:
 					print 'Warning: Something went wrong with inserting this data into the database. The row %s was unable to be added to the database.\n' % str(values)
