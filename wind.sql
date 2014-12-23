@@ -1,6 +1,6 @@
 create table wind (
-id integer primary key,
-time integer,
+id serial primary key,
+time integer unique,
 wind_speed real,
 wind_direction real,
 gust_speed real,

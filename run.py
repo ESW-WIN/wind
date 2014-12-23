@@ -6,6 +6,7 @@ api = Api(app)
 
 def build_wind_data(values):
 	dictionary = {}
+	# dictionary['id'] = values[0]
 	dictionary['time'] = values[0]
 	dictionary['wind_speed'] = values[1]
 	dictionary['wind_direction'] = values[2]
@@ -18,6 +19,7 @@ def build_wind_data(values):
 	return dictionary
 
 def flatten_wind_data(data, index):
+	# wind_id = int(data[index]['id'])
 	time_stamp = int(data[index]['ts'])
 	wind_speed = float(data[index]['wind']['speed'])
 	wind_direction = float(data[index]['wind']['dir'])
@@ -61,14 +63,14 @@ class multiple_observations(Resource):
 			connection = connect_to_database(app.config['DATABASE_URI'])
 			cursor = connection.cursor()
 
-			cursor.execute('select * from wind where time <= %d and time >= %d order by time' % (end, start))
+			cursor.execute('select time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity, id from wind where time <= %d and time >= %d order by time' % (end, start))
 
 			data = cursor.fetchall()
 		else:
 			connection = connect_to_database(app.config['DATABASE_URI'])
 			cursor = connection.cursor()
 
-			cursor.execute('select * from wind order by time')
+			cursor.execute('select time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity, id from wind order by time')
 
 			data = cursor.fetchall()
 
@@ -99,14 +101,16 @@ class single_observation(Resource):
 				values = flatten_wind_data(data, index)
 
 				try:
-					cursor.execute('insert into wind (time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity) values (%d, %f, %f, %f, %f, %f, %f, %f)' % values)
+					values = list(values)
+					values.append(values[0])
+					cursor.execute('insert into wind (time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity) select %d, %f, %f, %f, %f, %f, %f, %f where not exists (select time from wind where time=%d)' % tuple(values))
 					cursor.fetchone()
-				except Exception, e:
-					print e
+				except Exception, error:
+					print error
 					# print 'Warning: Something went wrong with inserting this data into the database. The row %s was unable to be added to the database.\n' % str(values)
 			values = flatten_wind_data(data, 0)
 		else:
-			cursor.execute('select * from wind where time=%d' % (time,))
+			cursor.execute('select time, wind_speed, wind_direction, gust_speed, gust_direction, temperature, pressure, relative_humidity, id from wind where time=%d' % (time,))
 			values = cursor.fetchone()
 
 		connection.commit()
