@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
 	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/base.css" rel="stylesheet">
 </head>
 <html>
 <body>
@@ -24,7 +25,7 @@
 			</div><!--/.nav-collapse -->
 		</div>
 	</nav>
-	<div class="container">
+	<div class="content">
 		<?php
 			echo $body;
 		?>
@@ -32,4 +33,6 @@
 </body>
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="js/highcharts.js"></script>
+<script src="js/chart.js"></script>
 </html>
