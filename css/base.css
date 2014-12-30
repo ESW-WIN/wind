@@ -1,3 +1,12 @@
 .content {
 	padding-top: 50px;
 }
+
+.navbar-inverse {
+	background-color: #83c5ff;
+	border-color: #83c5ff;
+}
+
+.navbar-inverse .navbar-brand {
+	color: #FFFFFF;
+}
