@@ -2,11 +2,12 @@
 	padding-top: 50px;
 }
 
-.navbar-inverse {
-	background-color: #83c5ff;
-	border-color: #83c5ff;
+body {
+	background-image: url('../images/windmills.jpeg');
+	background-color: white;
+	background-size: 100%;
 }
 
-.navbar-inverse .navbar-brand {
-	color: #FFFFFF;
+.panel {
+	opacity: 0.5;
 }
