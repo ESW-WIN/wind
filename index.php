@@ -2,18 +2,29 @@
 ob_start();
 ?>
 <div class="row">
-	<div class="col-md-offset-1 col-md-10">
+	<div class="col-md-offset-3 col-md-6">
 		<div class="row">
-			<div data-wind-speed-chart class="col-md-12"></div>
-		</div>
-		<div class="row">
-			<div data-pressure-chart class="col-md-6"></div>
-			<div data-temperature-chart class="col-md-6"></div>
-		</div>
-		<div>
-			<h4 data-wind-speed></h4>
-			<h4 data-pressure></h4>
-			<h4 data-temperature></h4>
+			<div class="col-md-12">
+				<?php
+				$panelTitle = "";
+				ob_start();
+				?>
+				<h1 class="text-center">
+					In the last hour, Norris has 
+				</h1>
+				<h1 class="text-center">
+					generated 38 Watts of wind energy!
+				</h1>
+				<div class="row">
+					<div class="col-md-offset-4 col-md-4 text-center">
+						<a type="button" class="btn btn-primary btn-lg" href="home.php">Go!</a>
+					</div>
+				</div>
+				<?php
+				$panelBody = ob_get_clean();
+				include('panel.php');
+				?>
+			</div>
 		</div>
 	</div>
 </div>

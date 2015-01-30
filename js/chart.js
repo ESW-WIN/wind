@@ -24,7 +24,7 @@ $.ajax({
 			ylabel: 'pressure',
 			color: '#000000'
 		});
-		generateLinePlot('[data-temperature-chart]', pressureValues, {
+		generateLinePlot('[data-temperature-chart]', temperatureValues, {
 			title: 'Temperature',
 			xlabel: 'time',
 			ylabel: 'temperature',
